@@ -19,10 +19,10 @@ wss.on('connection', function connection(ws) {
 
 	
 	if(data === "HOST?"){
-		if(hostId != ""){
+		if(!hostId){
 			ws.send('SERVER:CHAR=H');
 			hostId = source
-		}else if (playerId != ""){
+		}else if (!playerId){
 			ws.send('SERVER:CHAR=P');
 			playerId = source
 		}else{
