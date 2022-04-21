@@ -7,4 +7,8 @@ export class Player {
   setGameId(gameId) {
     this.gameId = gameId
   }
+  
+  setColor(colorCode) {
+    this.colorCode = colorCode 
+  }
 }
