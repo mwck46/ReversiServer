@@ -34,16 +34,17 @@ wss.on('connection', function connection(ws) {
 			const gameId = avaliableGameId.shift();
       ws.gameId = newGame.gameId;
       
-			const player1 = new Player(msgObj.sender, ws)
-      players.push(player1)
+			const player1 = new Player(msgObj.sender, ws);
+			player1.setColor(msgObj.remarks);
+      players.push(player1);
       
 			const newGame = new Game(gameid);
-      newGame.AddPlayer(player1)
-      games.push(newGame)
+      newGame.AddPlayer(player1);
+      games.push(newGame);
 
-      const msg = new GameMessage("SERVER", "GAMEID", newGame.gameId).toString()
+      const msg = new GameMessage("SERVER", "GAMEID", newGame.gameId).toString();
       console.log('send: %s', msg);
-      ws.send(msg)
+      ws.send(msg);
 
 			usedGameId.push(gameId);
 
@@ -58,7 +59,8 @@ wss.on('connection', function connection(ws) {
       const player2 = new Player(msgObj.sender, ws)
       players.push(player2)
       game.AddPlayer(player2)
-      ws.send(new GameMessage("SERVER", "JOINGAME", "OK").toString())
+      ws.send(new GameMessage("SERVER", "JOINGAME", (game.player1.colorCode == 0) ? 1 : 0).toString())
+
     } else if (msgObj.message === "NEXTMOVE") {
       const player = players.find(p => p.playerId == msgObj.sender)
       if (!player) {
