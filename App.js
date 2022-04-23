@@ -2,10 +2,11 @@ import { WebSocketServer } from 'ws';
 
 import {shuffle} from './Helper.js'
 import {Game} from './Game.js'
+import {GameMessage} from './GameMessage.js'
 import {Player} from './Player.js'
 
 
-const MAX_GAME = 10;
+const MAX_GAME = 100;
 const PORT = 18080;
 const wss = new WebSocketServer({ port: PORT });
 
@@ -32,13 +33,13 @@ wss.on('connection', function connection(ws) {
   		}
 
 			const gameId = avaliableGameId.shift();
-      ws.gameId = newGame.gameId;
+      ws.gameId = gameId;
       
 			const player1 = new Player(msgObj.sender, ws);
 			player1.setColor(msgObj.remarks);
       players.push(player1);
       
-			const newGame = new Game(gameid);
+			const newGame = new Game(gameId);
       newGame.AddPlayer(player1);
       games.push(newGame);
 
@@ -59,7 +60,7 @@ wss.on('connection', function connection(ws) {
       const player2 = new Player(msgObj.sender, ws)
       players.push(player2)
       game.AddPlayer(player2)
-      ws.send(new GameMessage("SERVER", "JOINGAME", (game.player1.colorCode == 0) ? 1 : 0).toString())
+      ws.send(new GameMessage("SERVER", "JOINGAME", (game.players[0].colorCode == 0) ? 1 : 0).toString())
 
     } else if (msgObj.message === "NEXTMOVE") {
       const player = players.find(p => p.playerId == msgObj.sender)
