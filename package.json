@@ -5,7 +5,7 @@
   "main": "App.js",
   "scripts": {
     "start": "node App.js",
-    "hotreload": "npm run nodemon",
+    "dbg": "nodemon App.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
