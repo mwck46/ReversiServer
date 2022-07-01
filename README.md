@@ -14,7 +14,7 @@ This game server communicates with client mobile app by WebSocket protocol. The 
 ### Installing
 
 ```
-code blocks for commands
+npm install
 ```
 
 ### Executing program
