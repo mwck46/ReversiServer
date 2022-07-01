@@ -1,6 +1,6 @@
 # ReversiServer
 
-A game server for mobile game project Reversi-ReactNative
+A game server for mobile game project [Reversi-ReactNative](https://github.com/mwck46/Reversi-ReactNative)
 
 ## Description
 
