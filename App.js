@@ -3,6 +3,7 @@ import { WebSocketServer } from 'ws';
 import {shuffle} from './Helper.js'
 import {Game} from './Game.js'
 import {GameMessage} from './GameMessage.js'
+import {ColorCode} from './ColorCode.js'
 import {Player} from './Player.js'
 
 
@@ -60,7 +61,9 @@ wss.on('connection', function connection(ws) {
       const player2 = new Player(msgObj.sender, ws)
       players.push(player2)
       game.AddPlayer(player2)
-      ws.send(new GameMessage("SERVER", "JOINGAME", (game.players[0].colorCode == 0) ? 1 : 0).toString())
+      const msg = new GameMessage("SERVER", "JOINGAME", game.players[0].colorCode).toString();
+      ws.send(msg);
+      console.log('send: %s', msg);
 
     } else if (msgObj.message === "NEXTMOVE") {
       const player = players.find(p => p.playerId == msgObj.sender)
