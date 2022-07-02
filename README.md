@@ -29,6 +29,10 @@ npm run start
 npm run dbg
 ```
 
+## Authors
+
+Michael Wong
+
 ## Version History
 
 * 1.0
