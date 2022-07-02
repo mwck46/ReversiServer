@@ -32,7 +32,7 @@ npm run dbg
 ## Authors
 
 Michael Wong 
-(@mwck46)[https://github.com/mwck46]
+[@mwck46](https://github.com/mwck46)
 
 ## Version History
 
