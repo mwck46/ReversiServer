@@ -31,7 +31,7 @@ npm run dbg
 
 ## Authors
 
-Michael Wong 
+Michael Wong   
 [@mwck46](https://github.com/mwck46)
 
 ## Version History
