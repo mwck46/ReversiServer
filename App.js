@@ -1,10 +1,9 @@
 import { WebSocketServer } from 'ws';
 
-import {shuffle} from './Helper.js'
-import {Game} from './Game.js'
-import {GameMessage} from './GameMessage.js'
-import {ColorCode} from './ColorCode.js'
-import {Player} from './Player.js'
+import { shuffle } from './Helper.js'
+import { Game } from './Game.js'
+import { GameMessage } from './GameMessage.js'
+import { Player } from './Player.js'
 
 
 const MAX_GAME = 100;
@@ -14,9 +13,11 @@ const wss = new WebSocketServer({ port: PORT });
 var games = [];
 var players = [];
 var usedGameId = [];
-var avaliableGameId= shuffle([...Array(MAX_GAME).keys()]);
+var avaliableGameId = shuffle([...Array(MAX_GAME).keys()]);
 
-//TODO: use logging module to do proper logging
+//TODO: 
+// 1) use logging module to do proper logging
+// 2) may be use finite state machine?
 
 wss.on('connection', function connection(ws) {
   ws.send(new GameMessage("SERVER", "Connected").toString());
@@ -27,20 +28,20 @@ wss.on('connection', function connection(ws) {
     let msgObj = GameMessage.parseFromSocket(rawmsg)
 
     if (msgObj.message === "NEWGAME") {
-  		if (games.length >= MAX_GAME) {
-  		  ws.send(new GameMessage("SERVER", "ERROR", "Sorry! The game server is busy. Please try again later."))
-  		  ws.close();
-				return;
-  		}
+      if (games.length >= MAX_GAME) {
+        ws.send(new GameMessage("SERVER", "ERROR", "Sorry! The game server is busy. Please try again later."))
+        ws.close();
+        return;
+      }
 
-			const gameId = avaliableGameId.shift();
+      const gameId = avaliableGameId.shift();
       ws.gameId = gameId;
-      
-			const player1 = new Player(msgObj.sender, ws);
-			player1.setColor(msgObj.remarks);
+
+      const player1 = new Player(msgObj.sender, ws);
+      player1.setColor(msgObj.remarks);
       players.push(player1);
-      
-			const newGame = new Game(gameId);
+
+      const newGame = new Game(gameId);
       newGame.AddPlayer(player1);
       games.push(newGame);
 
@@ -48,7 +49,7 @@ wss.on('connection', function connection(ws) {
       console.log('send: %s', msg);
       ws.send(msg);
 
-			usedGameId.push(gameId);
+      usedGameId.push(gameId);
 
     } else if (msgObj.message === "JOINGAME") {
       const gameId = msgObj.remarks
@@ -78,36 +79,38 @@ wss.on('connection', function connection(ws) {
         return
       }
       for (let player of game.players) {
-        // don't send to yourself
         if (player.playerId != msgObj.sender) {
           player.webSock.send(new GameMessage("RIVAL", "NEXTMOVE", msgObj.remarks).toString())
         }
       }
-		}else{
-			console.log("Unknow request received")
-		}
+    } else {
+      console.log("Unknow request received")
+    }
 
 
   });
 
   ws.on('close', function close() {
-     const gameId = ws.gameId
-     const game = games.find(g => g.gameId == gameId)
-     //console.log(ws.gameId)
-     if (!game) {
-       return
-     }
-     //console.log(game)
-     for (let player of game.players) {
-       if (player.webSock !== ws) {
+    const gameId = ws.gameId
+    const game = games.find(g => g.gameId == gameId)
+    if (!game) {
+      console.log(`Connection closed, the game is already destroyed id = ${ws.gameId}`)
+      return
+    }
+    console.log(`Connection closed, free up game id = ${ws.gameId}`)
+
+    //console.log(game)
+    for (let player of game.players) {
+      if (player.webSock !== ws) {
         player.webSock.send(new GameMessage("SERVER", "GAMEOVER", "WON").toString())
         player.webSock.close()
-       }
-     }
+      }
+    }
 
-     games = games.filter(function(g){
-       return g.gameId != gameId
-     })
+    avaliableGameId.push(gameId);
+    games = games.filter(function (g) {
+      return g.gameId != gameId
+    })
 
   })
 });
